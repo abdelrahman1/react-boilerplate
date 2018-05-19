@@ -1,71 +1,56 @@
+const webpack = require("webpack");
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const autoprefixer = require("autoprefixer");
+const webpackMerge = require("webpack-merge");
+const loadConfig = mode => require(`./build-utils/webpack.${mode}`)(mode);
 
-module.exports = {
-  devtool: "cheap-module-eval-source-map",
-  entry: "./src/index.js",
-  output: {
-    path: path.join(__dirname, "dist"),
-    filename: "bundle.js"
-  },
-  resolve: {
-    extensions: [".js", ".jsx"]
-  },
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        use: {
-          loader: "babel-loader",
-          options: {
-            presets: [
-              [
-                "env",
-                {
-                  targets: {
-                    browsers: ["> 1%", "last 2 version"]
-                  }
+module.exports = ({ mode } = { mode: "production" }) =>
+  webpackMerge(
+    {
+      mode,
+      entry: path.join(__dirname, "./src/index.js"),
+      module: {
+        rules: [
+          {
+            test: /\.js$/,
+            use: [
+              {
+                loader: "babel-loader",
+                options: {
+                  babelrc: false,
+                  presets: [["env", { modules: false }], "react", "stage-2"],
+                  plugins: ["transform-regenerator", "transform-runtime"]
                 }
-              ],
-              "react"
+              }
+            ],
+            exclude: /node_modules/
+          },
+          {
+            test: /\.jpe?g$/,
+            use: [
+              {
+                loader: "url-loader",
+                options: {
+                  limit: 5000
+                }
+              }
             ]
           }
-        },
-        exclude: /node_modules/
+        ]
       },
-      {
-        test: /\.css$/,
-        use: [
-          {
-            loader: "style-loader"
-          },
-          {
-            loader: "css-loader",
-            options: {
-              importLoaders: 1,
-              modules: true,
-              localIdentName: "[name]__[local]__[hash:base64:5]"
-            }
-          },
-          {
-            loader: "postcss-loader",
-            options: {
-              plugins: () => {
-                autoprefixer({
-                  browsers: ["> 1%", "last 2 version"]
-                });
-              }
-            }
+      plugins: [
+        new webpack.ProgressPlugin(),
+        new HtmlWebpackPlugin({
+          template: path.join(__dirname, "./src/index.html"),
+          minify: {
+            minifyURLs: true,
+            removeComments: true,
+            removeEmptyElements: true,
+            useShortDoctype: true,
+            caseSensitive: true
           }
-        ],
-        exclude: /node_modules/
-      }
-    ]
-  },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: "./src/index.html"
-    })
-  ]
-};
+        })
+      ]
+    },
+    loadConfig(mode)
+  );
