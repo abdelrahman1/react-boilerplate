@@ -3,9 +3,10 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const webpackMerge = require("webpack-merge");
 const loadConfig = mode => require(`./build-utils/webpack.${mode}`)(mode);
+const loadPresets = require("./build-utils/loadPresets");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 
-module.exports = ({ mode } = { mode: "production" }) =>
+module.exports = ({ mode, presets } = { mode: "production", presets: [] }) =>
   webpackMerge(
     {
       mode,
@@ -56,5 +57,6 @@ module.exports = ({ mode } = { mode: "production" }) =>
         })
       ]
     },
-    loadConfig(mode)
+    loadConfig(mode),
+    loadPresets({ mode, presets })
   );
