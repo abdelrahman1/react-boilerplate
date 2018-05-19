@@ -3,6 +3,7 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const webpackMerge = require("webpack-merge");
 const loadConfig = mode => require(`./build-utils/webpack.${mode}`)(mode);
+const CleanWebpackPlugin = require("clean-webpack-plugin");
 
 module.exports = ({ mode } = { mode: "production" }) =>
   webpackMerge(
@@ -12,15 +13,24 @@ module.exports = ({ mode } = { mode: "production" }) =>
       module: {
         rules: [
           {
+            enforce: "pre",
             test: /\.js$/,
             use: [
               {
-                loader: "babel-loader",
+                loader: "eslint-loader",
                 options: {
-                  babelrc: false,
-                  presets: [["env", { modules: false }], "react", "stage-2"],
-                  plugins: ["transform-regenerator", "transform-runtime"]
+                  fix: true,
+                  emitError: true
                 }
+              }
+            ],
+            exclude: /node_modules/
+          },
+          {
+            test: /\.js$/,
+            use: [
+              {
+                loader: "babel-loader"
               }
             ],
             exclude: /node_modules/
@@ -39,16 +49,10 @@ module.exports = ({ mode } = { mode: "production" }) =>
         ]
       },
       plugins: [
+        new CleanWebpackPlugin(["dist"]),
         new webpack.ProgressPlugin(),
         new HtmlWebpackPlugin({
-          template: path.join(__dirname, "./src/index.html"),
-          minify: {
-            minifyURLs: true,
-            removeComments: true,
-            removeEmptyElements: true,
-            useShortDoctype: true,
-            caseSensitive: true
-          }
+          template: path.join(__dirname, "./src/index.html")
         })
       ]
     },

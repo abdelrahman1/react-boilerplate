@@ -1,0 +1,13 @@
+{
+  "presets": [
+    ["env", {
+      "modules":false,
+      "targets": {
+        "browsers": ["last 2 versions", "> 1%"]
+      }
+    }],
+    "react",
+    "stage-2"
+  ],
+  "plugins": ["transform-regenerator","transform-runtime"]
+}

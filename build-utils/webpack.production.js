@@ -1,22 +1,9 @@
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
 const autoprefixer = require("autoprefixer");
-const CleanWebpackPlugin = require("clean-webpack-plugin");
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
-const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 
 module.exports = () => ({
   devtool: "(none)",
-  optimization: {
-    minimizer: [
-      new UglifyJsPlugin({
-        cache: true,
-        parallel: true,
-        sourceMap: false
-      }),
-      new OptimizeCSSAssetsPlugin({})
-    ]
-  },
   module: {
     rules: [
       {
@@ -30,7 +17,8 @@ module.exports = () => ({
             options: {
               importLoaders: 1,
               modules: true,
-              localIdentName: "[name]__[local]__[hash:64:5]"
+              localIdentName: "[name]__[local]__[hash:64:5]",
+              minimize: true
             }
           },
           {
@@ -47,5 +35,5 @@ module.exports = () => ({
       }
     ]
   },
-  plugins: [new CleanWebpackPlugin(["dist"]), new MiniCssExtractPlugin()]
+  plugins: [new MiniCssExtractPlugin()]
 });
