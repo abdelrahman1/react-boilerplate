@@ -1,13 +1,14 @@
 import React, { Component } from "react";
-import Aux from "../../hoc/Aux/Aux";
 import classes from "./App.css";
+import reactImgUrl from "./assets/react-img.jpg";
 
 export default class App extends Component {
   render() {
     return (
-      <Aux>
+      <div>
         <h1 className={classes.heading}>ok</h1>
-      </Aux>
+        <img src={reactImgUrl} width="100px" height="100px" />
+      </div>
     );
   }
 }
